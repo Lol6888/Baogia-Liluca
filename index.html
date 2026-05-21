@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Liluca Flowers — Quotation / Báo Giá Builder</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<div class="builder">
+  <div class="controls">
+    <h3>Liluca Flowers · Báo Giá Builder</h3>
+
+    <div class="grid cols-3">
+      <div><label>Tên Công ty</label><input id="inpCompany" type="text" value="LILUCA FLOWERS"></div>
+      <div><label>Tagline</label><input id="inpTagline" type="text" value="Hoa tươi mỗi ngày · Quà tặng tinh tế"></div>
+      <div><label>Mã số thuế</label><input id="inpTaxCode" type="text" value=""></div>
+    </div>
+    <div style="margin-top:12px">
+        <label>Logo (tuỳ chọn)</label><input id="inpLogo" type="file" accept="image/*"><div class="small">Nếu để trống, dùng logo mặc định Liluca.</div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <label style="margin:0">Khách hàng (chọn để tự điền Billing)</label>
+        <button id="btnNewCus" class="ghost">+ Thêm KH</button>
+      </div>
+      <div id="cusList" class="card-list" style="margin-top:8px"></div>
+    </div>
+
+    <div style="margin-top:10px;border:1px solid var(--rule);border-radius:var(--radius);padding:12px;background:#fff">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <strong id="cusFormTitle">+ Thêm Khách hàng</strong>
+        <span class="small" id="cusStatus" style="color:var(--muted)"></span>
+      </div>
+
+      <div class="grid cols-3" style="margin-top:8px">
+        <div><label>KH — Tên</label><input id="cusName" placeholder="Người liên hệ"></div>
+        <div><label>KH — Công ty</label><input id="cusCompany" placeholder="Công ty / Cá nhân"></div>
+        <div><label>KH — Email</label><input id="cusEmail" type="email" placeholder="name@company.com"></div>
+        <div><label>KH — Điện thoại</label><input id="cusPhone" placeholder="+84 ..."></div>
+        <div class="grid" style="grid-column: span 2;">
+          <label>KH — Địa chỉ</label><input id="cusAddress" placeholder="Địa chỉ giao hàng...">
+        </div>
+        <div><label>KH — MST</label><input id="cusTax" placeholder="Mã số thuế (nếu có)"></div>
+        <div class="grid" style="grid-column: span 3;">
+          <label>KH — Ghi chú</label><input id="cusNotes" placeholder="Ghi chú thêm...">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <button id="btnSaveCus">Lưu KH</button>
+        <button id="btnCancelCus" class="ghost" style="display:none">Huỷ</button>
+      </div>
+    </div>
+
+    <div class="grid cols-3" style="margin-top:10px">
+      <div><label>Billing to (Tên)</label><input id="inpBillName" type="text" value="Quý khách"></div>
+      <div><label>Địa chỉ Billing</label><input id="inpBillAddr" type="text" value=""></div>
+      <div><label>Username (góc trên)</label><input id="inpUsername" type="text" value="@lilucaflowers"></div>
+    </div>
+
+    <div class="grid cols-3" style="margin-top:10px">
+      <div><label>Số báo giá</label><input id="inpNumber" type="text" value="#LL2026"></div>
+      <div><label>Ngày</label><input id="inpDate" type="date"></div>
+      <div><label>Tiền tệ</label>
+        <select id="inpCurrency">
+          <option value="VND" selected>VND (₫)</option>
+          <option value="USD">USD ($)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="AUD">AUD (A$)</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <label>Danh mục sản phẩm hoa</label>
+      <div class="items-editor-head">
+        <span>Ảnh</span><span>Tên sản phẩm</span><span>Đơn giá</span><span>SL</span><span>Ghi chú</span><span>Thành tiền</span><span></span>
+      </div>
+      <div id="itemsEditor"></div>
+      <button class="add-row" id="btnAddRow">+ Thêm sản phẩm</button>
+    </div>
+
+    <div class="grid cols-3" style="margin-top:10px">
+      <div><label>VAT (%)</label><input id="inpVAT" type="number" value="0" min="0" step="0.1"></div>
+      <div><label>Ghi chú (dòng 1)</label><input id="inpNote1" type="text" value="Báo giá có hiệu lực trong vòng 7 ngày. Vui lòng liên hệ Liluca để xác nhận đặt hoa."></div>
+      <div><label>Lời chúc (dòng 2)</label><input id="inpNote2" type="text" value="Giá đã bao gồm gói hoa cơ bản. Phí ship sẽ tính theo khu vực giao."></div>
+
+      <div><label>Tên người ký</label><input id="inpSignName" type="text" value="Liluca Flowers"></div>
+      <div><label>Chức danh</label><input id="inpSignTitle" type="text" value="Đại diện cửa hàng"></div>
+    </div>
+
+    <div style="margin-top:12px;border:1px solid var(--rule);border-radius:var(--radius);padding:12px;background:#fff">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <strong>Sao lưu dữ liệu</strong>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="ghost" id="btnExportData">⬇️ Export JSON</button>
+        <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;height:var(--field-h)">
+          <span class="ghost" style="display:inline-grid;place-items:center;height:var(--field-h);padding:0 14px;border:1px solid #d7cabc;border-radius:var(--radius)">⬆️ Import JSON</span>
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </label>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button id="btnPNG">Tải PNG</button>
+      <button id="btnPreview">Xem trước</button>
+      <button class="secondary" id="btnRecalc">Tính lại</button>
+      <button class="ghost" onclick="window.print()">Tải PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="invoice" class="invoice-wrapper">
+  <div class="decor decor-circle"></div>
+  <div class="decor decor-blob"></div>
+
+  <header class="invoice-header">
+    <div class="logo-col">
+      <img id="logo" src="logo.svg" alt="Liluca Flowers" class="logo">
+      <div class="company-info">
+        <h1 id="companyName" class="company-name">LILUCA FLOWERS</h1>
+        <p id="companyTagline" class="tagline">Hoa tươi mỗi ngày · Quà tặng tinh tế</p>
+        <p id="companyTaxCode" class="tagline" style="display:none"></p>
+      </div>
+    </div>
+    <div class="social">
+      <p id="username">@lilucaflowers</p>
+      <div class="icons" aria-label="social links">
+        <a href="#" aria-label="Facebook" class="ico"><svg viewBox="0 0 24 24"><path d="M22 12.07C22 6.49 17.52 2 11.93 2S2 6.49 2 12.07c0 5.02 3.66 9.19 8.44 9.98v-7.06H7.9v-2.92h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.22.2 2.22.2v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 2.92h-2.3v7.06C18.34 21.26 22 17.09 22 12.07z" fill="currentColor"/></svg></a>
+        <a href="#" aria-label="Instagram" class="ico"><svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5a5.5 5.5 0 1 1 0 11.001 5.5 5.5 0 0 1 0-11zM19 6.5a1 1 0 1 1-2.001-.002A1 1 0 0 1 19 6.5z" fill="currentColor"/></svg></a>
+        <a href="#" aria-label="Twitter" class="ico"><svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.34-1.6.57-2.46.68a4.23 4.23 0 0 0 1.85-2.34 8.42 8.42 0 0 1-2.67 1.02 4.21 4.21 0 0 0-7.29 3.84A11.95 11.95 0 0 1 3.15 4.7a4.2 4.2 0 0 0 1.3 5.62 4.16 4.16 0 0 1-1.9-.52v.05a4.22 4.22 0 0 0 3.38 4.13c-.46.12-.94.18-1.44.07a4.23 4.23 0 0 0 3.94 2.93A8.45 8.45 0 0 1 2 19.55 11.93 11.93 0 0 0 8.29 21c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.35-.01-.53A8.34 8.34 0 0 0 22.46 6z" fill="currentColor"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <h2 class="title">Báo Giá / Quotation</h2>
+
+  <section class="info">
+    <div>
+      <strong>Gửi tới:</strong>
+      <p id="billTo">Quý khách</p>
+    </div>
+    <div><p><strong>Số báo giá</strong><br><span id="invNumber">#LL2026</span></p></div>
+    <div><p><strong>Ngày</strong><br><span id="invDate"></span></p></div>
+  </section>
+
+  <div class="items-wrapper">
+    <table class="items">
+      <colgroup><col style="width:42%"><col style="width:13%"><col style="width:8%"><col style="width:20%"><col style="width:17%"></colgroup>
+      <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th>SL</th><th>Ghi chú</th><th>Thành tiền</th></tr></thead>
+      <tbody id="itemsBody"></tbody>
+    </table>
+  </div>
+
+  <section class="summary">
+    <p>Tạm tính <span id="subtotal">0 ₫</span></p>
+    <p><span id="taxLabel">Thuế</span> <span id="tax">0 ₫</span></p>
+    <p class="total">Tổng cộng <span id="grand">0 ₫</span></p>
+  </section>
+
+  <section class="invoice-signature">
+    <div class="signature-line"></div>
+    <p id="signName" class="signature-name"></p>
+    <p id="signTitle" class="signature-title"></p>
+  </section>
+
+  <footer class="invoice-note" style="margin-top:26px;text-align:center;border-top:1px solid #eadfce;padding-top:16px;color:var(--ink)">
+    <p class="note-line" id="note1"></p>
+    <p class="wish-line" id="note2" style="opacity:.8;font-style:italic"></p>
+  </footer>
+</div>
+
+<script>
+/* ========== Local DB ========= */
+const DB_KEY = "lilucaQuoApp_v1";
+const seedDB = {
+  customers: [],
+  settings: { lastCustomerId:null }
+};
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw){ localStorage.setItem(DB_KEY, JSON.stringify(seedDB)); return structuredClone(seedDB); }
+    const parsed = JSON.parse(raw);
+    return {
+      ...structuredClone(seedDB), ...parsed,
+      customers: parsed.customers ?? [],
+      settings: { ...seedDB.settings, ...(parsed.settings||{}) }
+    };
+  }catch(e){ console.error(e); localStorage.setItem(DB_KEY, JSON.stringify(seedDB)); return structuredClone(seedDB); }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+let DB = loadDB();
+
+/* ========== Helpers & CRUD ========= */
+const $ = s=>document.querySelector(s);
+const uuid = () => "id-" + Math.random().toString(36).slice(2,9);
+
+function upsertCustomer(cus){ if(!cus.id) cus.id=uuid(); const i=DB.customers.findIndex(x=>x.id===cus.id||(cus.email&&x.email&&x.email===cus.email)); if(i>=0) DB.customers[i]={...DB.customers[i],...cus}; else DB.customers.push(cus); DB.settings.lastCustomerId=cus.id; saveDB(DB); return cus.id; }
+function deleteCustomer(id){ DB.customers = DB.customers.filter(c=>c.id!==id); if(DB.settings.lastCustomerId===id) DB.settings.lastCustomerId=null; saveDB(DB); }
+function getCustomer(id){ return DB.customers.find(c=>c.id===id)||null; }
+function listCustomers(){ return [...DB.customers].sort((a,b)=> (a.company||"").localeCompare(b.company||"")); }
+
+/* ========== Customers UI ========= */
+const cusListEl = document.getElementById('cusList');
+const cusFormTitle = document.getElementById('cusFormTitle');
+const cusStatus = document.getElementById('cusStatus');
+const btnNewCus = document.getElementById('btnNewCus');
+const btnSaveCus = document.getElementById('btnSaveCus');
+const btnCancelCus = document.getElementById('btnCancelCus');
+let editingCustomerId = null;
+
+const $name = $("#cusName"), $company = $("#cusCompany"), $email = $("#cusEmail"),
+      $phone = $("#cusPhone"), $address = $("#cusAddress"), $tax = $("#cusTax"), $notes = $("#cusNotes");
+
+function readCustomerForm(id){
+  return { id, name:$name.value.trim(), company:$company.value.trim(), email:$email.value.trim(),
+    phone:$phone.value.trim(), address:$address.value.trim(), taxCode:$tax.value.trim(), notes:$notes.value.trim()
+  };
+}
+function fillCustomerForm(c){
+  $name.value = c?.name || ""; $company.value = c?.company || ""; $email.value = c?.email || "";
+  $phone.value = c?.phone || ""; $address.value = c?.address || ""; $tax.value = c?.taxCode || ""; $notes.value = c?.notes || "";
+  if(c){
+    $("#inpBillName").value = [c.name, c.company].filter(Boolean).join(" — ");
+    $("#inpBillAddr").value = [c.address, c.email, c.phone].filter(Boolean).join(" | ");
+    applyFields();
+  }
+}
+function clearCustomerForm(){ fillCustomerForm(null); }
+
+function renderCustomerCards(){
+  const list = listCustomers();
+  cusListEl.innerHTML = "";
+  const picked = DB.settings.lastCustomerId;
+
+  list.forEach(c=>{
+    const card = document.createElement('div'); card.className='card';
+
+    const radio = document.createElement('input'); radio.type='radio'; radio.name='cusPick'; radio.className='pick'; radio.checked = (picked===c.id);
+    if(radio.checked) card.classList.add('selected');
+    radio.addEventListener('change', ()=>{
+      DB.settings.lastCustomerId = c.id; saveDB(DB);
+      fillCustomerForm(c);
+      [...cusListEl.children].forEach(el=>el.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+
+    const main = document.createElement('div'); main.className='card-main';
+    const title = document.createElement('div'); title.className='card-title';
+    const titleText = c.company ? `${c.company} — ${c.name||''}` : (c.name || c.email || 'Khách hàng');
+    title.innerHTML = `<span>${titleText}</span><span class="card-badge">KH</span>`;
+
+    const meta = document.createElement('div'); meta.className='card-meta';
+    meta.textContent = [
+      c.email ? `Email: ${c.email}` : "",
+      c.phone ? `Phone: ${c.phone}` : "",
+      c.address ? `Address: ${c.address}` : "",
+      c.taxCode ? `Tax: ${c.taxCode}` : "",
+      c.notes ? `Notes: ${c.notes}` : ""
+    ].filter(Boolean).join("\n");
+
+    const actions = document.createElement('div'); actions.className='card-actions';
+    const editBtn = document.createElement('button'); editBtn.className='ghost'; editBtn.textContent='Sửa';
+    editBtn.addEventListener('click', ()=> startCustomerEdit(c.id));
+    const delBtn = document.createElement('button'); delBtn.className='danger'; delBtn.textContent='Xoá';
+    delBtn.addEventListener('click', ()=>{
+      if(confirm('Xoá khách hàng này?')){ deleteCustomer(c.id); renderCustomerCards(); clearCustomerForm(); }
+    });
+    actions.appendChild(editBtn); actions.appendChild(delBtn);
+
+    const right = document.createElement('div'); right.style.width='56px'; right.style.height='56px';
+
+    main.appendChild(title); main.appendChild(meta); main.appendChild(actions);
+    card.appendChild(radio); card.appendChild(right); card.appendChild(main);
+    cusListEl.appendChild(card);
+  });
+}
+
+function startCustomerEdit(id){
+  const c = id ? getCustomer(id) : null;
+  editingCustomerId = id || null;
+  cusFormTitle.textContent = id ? '✏️ Sửa Khách hàng' : '+ Thêm Khách hàng';
+  btnSaveCus.textContent = id ? 'Cập nhật' : 'Lưu KH';
+  btnCancelCus.style.display = id ? '' : 'none';
+  cusStatus.textContent = id ? 'Đang sửa…' : '';
+  fillCustomerForm(c);
+  btnSaveCus.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function stopCustomerEdit(){
+  editingCustomerId = null;
+  cusFormTitle.textContent = '+ Thêm Khách hàng';
+  btnSaveCus.textContent = 'Lưu KH';
+  btnCancelCus.style.display = 'none';
+  cusStatus.textContent = '';
+  clearCustomerForm();
+}
+btnNewCus.addEventListener('click', ()=> startCustomerEdit(null));
+btnCancelCus?.addEventListener('click', ()=> stopCustomerEdit());
+btnSaveCus.addEventListener('click', ()=>{
+  const id = upsertCustomer(readCustomerForm(editingCustomerId || undefined));
+  renderCustomerCards();
+  DB.settings.lastCustomerId = id; saveDB(DB);
+  const c = getCustomer(id); fillCustomerForm(c);
+  cusStatus.textContent = editingCustomerId ? 'Đã cập nhật ✓' : 'Đã lưu ✓';
+  if(editingCustomerId){ stopCustomerEdit(); }
+  setTimeout(()=> cusStatus.textContent='', 1200);
+});
+
+/* ========== Money & parse ========= */
+const formatMoney = (num, currency) => {
+  const map={USD:{style:'currency',currency:'USD'},VND:{style:'currency',currency:'VND',minimumFractionDigits:0},GBP:{style:'currency',currency:'GBP'},AUD:{style:'currency',currency:'AUD'}};
+  const opt=map[currency]||map.USD; return new Intl.NumberFormat('vi-VN',opt).format(num||0);
+};
+const parseNum = v => {
+    if (typeof v === 'string') {
+        v = v.replace(/[.,]/g, '');
+        v = v.replace(/[^\d-]/g, '');
+    }
+    const num = parseFloat(v);
+    return isNaN(num) ? 0 : num;
+};
+
+/* ========== Items (mỗi item có thể có ảnh) ========= */
+let items=[
+    {desc:'Bó hoa hồng đỏ 20 bông',price:'650000',qty:'1', note:'Gói giấy Kraft + nơ', image:''},
+    {desc:'Giỏ hoa tươi cao cấp – tone pastel',price:'1200000',qty:'1', note:'Giao kèm thiệp', image:''},
+    {desc:'Bình hoa để bàn baby + cẩm chướng',price:'480000',qty:'2', note:'Bình thuỷ tinh', image:''}
+];
+
+const itemsEditor=document.getElementById('itemsEditor');
+
+function setItemImage(idx, file){
+  if(!file){ items[idx].image=''; renderItemsEditor(); recalc(); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    items[idx].image = ev.target.result;
+    renderItemsEditor();
+    recalc();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderItemsEditor(){
+  itemsEditor.innerHTML='';
+  items.forEach((it,idx)=>{
+    const row=document.createElement('div');
+    row.className='item-row';
+    const thumb = it.image
+      ? `<img src="${it.image}" alt="">`
+      : `<span class="placeholder">+ ảnh</span>`;
+    row.innerHTML=`
+      <label class="item-thumb" data-idx="${idx}">
+        ${thumb}
+        <input type="file" accept="image/*" data-img="${idx}" hidden>
+        ${it.image ? `<button class="thumb-clear" data-clear="${idx}" title="Xoá ảnh">×</button>` : ''}
+      </label>
+      <input data-k="desc" data-i="${idx}" type="text" placeholder="Tên sản phẩm hoa" value="${(it.desc||'').replace(/"/g,'&quot;')}">
+      <input data-k="price" data-i="${idx}" type="text" placeholder="Đơn giá" value="${it.price||''}">
+      <input data-k="qty" data-i="${idx}" type="text" placeholder="SL" value="${it.qty||''}">
+      <input data-k="note" data-i="${idx}" type="text" placeholder="Ghi chú" value="${(it.note||'').replace(/"/g,'&quot;')}">
+      <input data-k="total" type="text" value="" disabled placeholder="Auto">
+      <button class="del danger" data-del="${idx}">Xoá</button>`;
+    itemsEditor.appendChild(row);
+  });
+
+  itemsEditor.querySelectorAll('input[data-k]').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const i=+inp.dataset.i,k=inp.dataset.k;
+      if(k==='desc') items[i].desc=inp.value;
+      if(k==='price') items[i].price=inp.value;
+      if(k==='qty') items[i].qty=inp.value;
+      if(k==='note') items[i].note=inp.value;
+      recalc();
+    });
+  });
+  itemsEditor.querySelectorAll('input[data-img]').forEach(inp=>{
+    inp.addEventListener('change', e => {
+      const i = +inp.dataset.img;
+      const f = e.target.files?.[0];
+      if(f) setItemImage(i, f);
+    });
+  });
+  itemsEditor.querySelectorAll('button[data-clear]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.preventDefault(); e.stopPropagation();
+      setItemImage(+btn.dataset.clear, null);
+    });
+  });
+  itemsEditor.querySelectorAll('button[data-del]').forEach(btn=>{
+    btn.onclick=()=>{items.splice(+btn.dataset.del,1); renderItemsEditor(); recalc();};
+  });
+
+  const cur=document.getElementById('inpCurrency').value;
+  itemsEditor.querySelectorAll('.item-row').forEach((row,i)=>{
+    const t = parseNum(items[i].price) * parseNum(items[i].qty);
+    row.querySelector('input[disabled]').value=formatMoney(t,cur);
+  });
+}
+document.getElementById('btnAddRow').onclick=()=>{items.push({desc:'',price:'0',qty:'1', note:'', image:''}); renderItemsEditor();};
+
+/* apply & recalc */
+function applyFields(){
+  document.getElementById('companyName').textContent=document.getElementById('inpCompany').value||'LILUCA FLOWERS';
+  document.getElementById('companyTagline').textContent=document.getElementById('inpTagline').value||'';
+
+  const taxCode = document.getElementById('inpTaxCode').value.trim();
+  const taxCodeEl = document.getElementById('companyTaxCode');
+  if (taxCode) { taxCodeEl.textContent = `MST: ${taxCode}`; taxCodeEl.style.display = ''; }
+  else { taxCodeEl.textContent = ''; taxCodeEl.style.display = 'none'; }
+
+  document.getElementById('username').textContent=document.getElementById('inpUsername').value||'';
+  document.getElementById('billTo').innerHTML=(document.getElementById('inpBillName').value||'')+'<br>'+(document.getElementById('inpBillAddr').value||'');
+  document.getElementById('invNumber').textContent=document.getElementById('inpNumber').value||'#LL2026';
+  const d=document.getElementById('inpDate').value; if(d){const dt=new Date(d); document.getElementById('invDate').textContent=dt.toLocaleDateString('vi-VN',{year:'numeric',month:'long',day:'numeric'});}
+  document.getElementById('note1').innerHTML=(document.getElementById('inpNote1').value||'').replace(/\n/g,'<br>');
+  document.getElementById('note2').innerHTML=(document.getElementById('inpNote2').value||'').replace(/\n/g,'<br>');
+  document.getElementById('signName').textContent = document.getElementById('inpSignName').value || '';
+  document.getElementById('signTitle').textContent = document.getElementById('inpSignTitle').value || '';
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function recalc(){
+  const cur=document.getElementById('inpCurrency').value;
+  const tbody=document.getElementById('itemsBody'); tbody.innerHTML='';
+  let subtotal=0;
+  items.forEach(it=>{
+    const priceNum = parseNum(it.price);
+    const qtyNum = parseNum(it.qty);
+    const line = priceNum * qtyNum;
+    subtotal+=line;
+
+    const productCell = it.image
+      ? `<div class="product-cell"><img class="product-thumb" src="${it.image}" alt=""><span>${escapeHtml(it.desc)}</span></div>`
+      : `<div class="product-cell"><div class="product-thumb placeholder"></div><span>${escapeHtml(it.desc)}</span></div>`;
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${productCell}</td><td>${escapeHtml(it.price)}</td><td>${escapeHtml(it.qty)}</td><td>${escapeHtml(it.note)}</td><td>${formatMoney(line,cur)}</td>`;
+    tbody.appendChild(tr);
+  });
+  const vat=parseNum(document.getElementById('inpVAT').value);
+
+  const taxLabelEl = document.getElementById('taxLabel');
+  if (taxLabelEl) taxLabelEl.textContent = `Thuế (${vat}%)`;
+
+  const tax=subtotal*(vat/100); const grand=subtotal+tax;
+  document.getElementById('subtotal').textContent=formatMoney(subtotal,cur);
+  document.getElementById('tax').textContent=formatMoney(tax,cur);
+  document.getElementById('grand').textContent=formatMoney(grand,cur);
+
+  itemsEditor.querySelectorAll('.item-row').forEach((row,i)=>{
+    const t = parseNum(items[i].price) * parseNum(items[i].qty);
+    const d = row.querySelector('input[disabled]');
+    if(d) d.value=formatMoney(t,cur);
+  });
+}
+
+/* assets & export */
+document.getElementById('inpLogo').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return; document.getElementById('logo').src=URL.createObjectURL(f);
+});
+document.getElementById('btnExportData').addEventListener('click', ()=>{
+  const payload = { ...DB, items, meta:{
+    company:$('#inpCompany').value, tagline:$('#inpTagline').value, tax:$('#inpTaxCode').value,
+    username:$('#inpUsername').value, number:$('#inpNumber').value, date:$('#inpDate').value,
+    currency:$('#inpCurrency').value, vat:$('#inpVAT').value,
+    note1:$('#inpNote1').value, note2:$('#inpNote2').value,
+    signName:$('#inpSignName').value, signTitle:$('#inpSignTitle').value,
+    billName:$('#inpBillName').value, billAddr:$('#inpBillAddr').value
+  }};
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='liluca-baogia-backup.json'; a.click();
+});
+document.getElementById('importFile').addEventListener('change', e=>{
+  const f=e.target.files?.[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload = ev=>{
+    try{
+      const incoming = JSON.parse(ev.target.result);
+      DB = { ...seedDB, ...incoming, customers: incoming.customers || [], settings: { ...seedDB.settings, ...(incoming.settings||{}) } };
+      saveDB(DB);
+      if(Array.isArray(incoming.items)) items = incoming.items;
+      if(incoming.meta){
+        const m=incoming.meta;
+        if(m.company!=null) $('#inpCompany').value=m.company;
+        if(m.tagline!=null) $('#inpTagline').value=m.tagline;
+        if(m.tax!=null) $('#inpTaxCode').value=m.tax;
+        if(m.username!=null) $('#inpUsername').value=m.username;
+        if(m.number!=null) $('#inpNumber').value=m.number;
+        if(m.date!=null) $('#inpDate').value=m.date;
+        if(m.currency!=null) $('#inpCurrency').value=m.currency;
+        if(m.vat!=null) $('#inpVAT').value=m.vat;
+        if(m.note1!=null) $('#inpNote1').value=m.note1;
+        if(m.note2!=null) $('#inpNote2').value=m.note2;
+        if(m.signName!=null) $('#inpSignName').value=m.signName;
+        if(m.signTitle!=null) $('#inpSignTitle').value=m.signTitle;
+        if(m.billName!=null) $('#inpBillName').value=m.billName;
+        if(m.billAddr!=null) $('#inpBillAddr').value=m.billAddr;
+      }
+      renderCustomerCards(); renderItemsEditor(); applyFields(); recalc();
+      alert('Đã nhập dữ liệu!');
+    }catch(err){ alert('JSON không hợp lệ'); }
+  };
+  r.readAsText(f);
+});
+
+/* actions */
+document.getElementById('btnPreview').onclick=()=>{applyFields(); recalc(); document.getElementById('invoice').scrollIntoView({behavior:'smooth'});};
+document.getElementById('btnRecalc').onclick=()=>{applyFields(); recalc();};
+document.getElementById('btnPNG').addEventListener('click', async () => {
+  const invoice = document.getElementById('invoice'); invoice.scrollIntoView();
+  const canvas = await html2canvas(invoice, { scale: 2, useCORS: true, backgroundColor: '#fff' });
+  const link = document.createElement('a'); link.download = 'liluca-baogia.png'; link.href = canvas.toDataURL('image/png'); link.click();
+});
+
+/* init */
+function initApp(){
+  document.getElementById('inpDate').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('inpVAT').addEventListener('input', recalc);
+  document.getElementById('inpCurrency').addEventListener('change', recalc);
+
+  renderCustomerCards();
+  renderItemsEditor();
+  applyFields(); recalc();
+
+  if(DB.settings.lastCustomerId){
+    const c = getCustomer(DB.settings.lastCustomerId); if(c) fillCustomerForm(c);
+  }
+}
+window.addEventListener('DOMContentLoaded', initApp);
+</script>
+
+</body>
+</html>
