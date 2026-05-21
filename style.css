@@ -218,8 +218,21 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
   }
   .builder{ display:none !important; }
 
-  /* Bỏ decor khi in cho gọn gàng, B2B-friendly */
-  .decor{ display:none !important; }
+  /* Giữ decor brand graphic khi in (chỉ xuất hiện trang 1 do position absolute) */
+  .decor{
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .decor-circle{
+    top: -60mm; right: -60mm;
+    width: 140mm; height: 140mm;
+    opacity: .65;
+  }
+  .decor-blob{
+    top: 32mm; right: 10mm;
+    width: 26mm; height: 26mm;
+    opacity: .85;
+  }
 
   /* Wrapper: full width của vùng content trong @page, cho phép flow nhiều trang */
   .invoice-wrapper{
