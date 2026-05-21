@@ -32,6 +32,16 @@ Thay file `logo.svg` (hoặc thay tham chiếu `<img id="logo" src="...">` trong
 
 Người dùng cũng có thể upload logo trực tiếp trên giao diện bằng ô **"Logo (tuỳ chọn)"**.
 
+## Mẹo khi in PDF
+
+Trình duyệt mặc định in kèm tiêu đề trang và URL ở mép giấy. Để báo giá in ra **sạch sẽ chuyên nghiệp**:
+
+1. Bấm **"Tải PDF"** trên giao diện
+2. Trong hộp thoại in: mở **"More settings"** (Thiết lập khác)
+3. **Bỏ check ô "Headers and footers"** (Tiêu đề và chân trang)
+4. **Destination:** chọn `Save as PDF`
+5. **Margins:** để `Default` (đừng chọn `None`)
+
 ## Deploy GitHub Pages
 
 1. Push repo lên GitHub

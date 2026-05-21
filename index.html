@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Liluca Flowers — Quotation / Báo Giá Builder</title>
+<title>Báo giá Liluca Flowers</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -111,8 +111,11 @@
       <button id="btnPNG">Tải PNG</button>
       <button id="btnPreview">Xem trước</button>
       <button class="secondary" id="btnRecalc">Tính lại</button>
-      <button class="ghost" onclick="window.print()">Tải PDF</button>
+      <button class="ghost" id="btnPDF">Tải PDF</button>
     </div>
+    <p class="small" style="margin-top:8px;text-align:right;color:var(--muted)">
+      💡 Khi hộp thoại in mở: bấm <strong>"More settings"</strong> → bỏ check <strong>"Headers and footers"</strong> để không in tên trang và URL.
+    </p>
   </div>
 </div>
 
@@ -515,6 +518,14 @@ document.getElementById('importFile').addEventListener('change', e=>{
 /* actions */
 document.getElementById('btnPreview').onclick=()=>{applyFields(); recalc(); document.getElementById('invoice').scrollIntoView({behavior:'smooth'});};
 document.getElementById('btnRecalc').onclick=()=>{applyFields(); recalc();};
+document.getElementById('btnPDF').addEventListener('click', () => {
+  applyFields(); recalc();
+  const num = document.getElementById('inpNumber').value.trim() || '';
+  const originalTitle = document.title;
+  document.title = ('Báo giá Liluca ' + num).trim();
+  window.print();
+  setTimeout(() => { document.title = originalTitle; }, 1000);
+});
 document.getElementById('btnPNG').addEventListener('click', async () => {
   const invoice = document.getElementById('invoice'); invoice.scrollIntoView();
   const canvas = await html2canvas(invoice, { scale: 2, useCORS: true, backgroundColor: '#fff' });
