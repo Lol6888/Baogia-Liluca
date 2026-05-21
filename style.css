@@ -136,7 +136,7 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
 
 .invoice-header{display:flex;justify-content:space-between;align-items:flex-start}
 .logo-col{display:flex;align-items:center;gap:14px;min-width:0}
-.logo{width:72px;height:72px;object-fit:contain;flex:0 0 72px;background:#fff;border-radius:10px;padding:4px}
+.logo{width:auto;max-width:280px;height:48px;object-fit:contain;object-position:left center;flex:0 0 auto;background:transparent;border-radius:0;padding:0}
 .company-info{
   min-width:0;
   min-height: 64px;
