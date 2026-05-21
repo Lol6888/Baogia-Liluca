@@ -17,7 +17,11 @@
     <div class="grid cols-3">
       <div><label>Tên Công ty (để trống nếu logo đã có)</label><input id="inpCompany" type="text" value=""></div>
       <div><label>Tagline</label><input id="inpTagline" type="text" value="Hoa tươi mỗi ngày"></div>
-      <div><label>Mã số thuế</label><input id="inpTaxCode" type="text" value=""></div>
+      <div><label>Số điện thoại</label><input id="inpPhone" type="text" value="" placeholder="0xxx xxx xxx"></div>
+    </div>
+    <div class="grid cols-3" style="margin-top:10px">
+      <div style="grid-column:span 2"><label>Địa chỉ</label><input id="inpAddress" type="text" value="" placeholder="Số nhà, đường, phường, quận, thành phố"></div>
+      <div><label>Mã số thuế (nếu có)</label><input id="inpTaxCode" type="text" value=""></div>
     </div>
     <div style="margin-top:12px">
         <label>Logo (tuỳ chọn)</label><input id="inpLogo" type="file" accept="image/*"><div class="small">Nếu để trống, dùng logo mặc định Liluca.</div>
@@ -139,6 +143,8 @@
       <div class="company-info">
         <h1 id="companyName" class="company-name" style="display:none"></h1>
         <p id="companyTagline" class="tagline">Hoa tươi mỗi ngày</p>
+        <p id="companyAddress" class="tagline" style="display:none"></p>
+        <p id="companyPhone" class="tagline" style="display:none"></p>
         <p id="companyTaxCode" class="tagline" style="display:none"></p>
       </div>
     </div>
@@ -427,6 +433,16 @@ function applyFields(){
   cNameEl.style.display = cName ? '' : 'none';
   document.getElementById('companyTagline').textContent=document.getElementById('inpTagline').value||'';
 
+  const addr = document.getElementById('inpAddress').value.trim();
+  const addrEl = document.getElementById('companyAddress');
+  if (addr) { addrEl.textContent = `📍 ${addr}`; addrEl.style.display = ''; }
+  else { addrEl.textContent = ''; addrEl.style.display = 'none'; }
+
+  const phone = document.getElementById('inpPhone').value.trim();
+  const phoneEl = document.getElementById('companyPhone');
+  if (phone) { phoneEl.textContent = `☎ ${phone}`; phoneEl.style.display = ''; }
+  else { phoneEl.textContent = ''; phoneEl.style.display = 'none'; }
+
   const taxCode = document.getElementById('inpTaxCode').value.trim();
   const taxCodeEl = document.getElementById('companyTaxCode');
   if (taxCode) { taxCodeEl.textContent = `MST: ${taxCode}`; taxCodeEl.style.display = ''; }
@@ -499,6 +515,7 @@ document.getElementById('inpLogo').addEventListener('change',e=>{
 document.getElementById('btnExportData').addEventListener('click', ()=>{
   const payload = { ...DB, items, meta:{
     company:$('#inpCompany').value, tagline:$('#inpTagline').value, tax:$('#inpTaxCode').value,
+    address:$('#inpAddress').value, phone:$('#inpPhone').value,
     username:$('#inpUsername').value, number:$('#inpNumber').value, date:$('#inpDate').value,
     currency:$('#inpCurrency').value, vat:$('#inpVAT').value,
     discount:$('#inpDiscount').value, discountType:$('#inpDiscountType').value,
@@ -523,6 +540,8 @@ document.getElementById('importFile').addEventListener('change', e=>{
         if(m.company!=null) $('#inpCompany').value=m.company;
         if(m.tagline!=null) $('#inpTagline').value=m.tagline;
         if(m.tax!=null) $('#inpTaxCode').value=m.tax;
+        if(m.address!=null) $('#inpAddress').value=m.address;
+        if(m.phone!=null) $('#inpPhone').value=m.phone;
         if(m.username!=null) $('#inpUsername').value=m.username;
         if(m.number!=null) $('#inpNumber').value=m.number;
         if(m.date!=null) $('#inpDate').value=m.date;
