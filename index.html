@@ -87,10 +87,20 @@
 
     <div class="grid cols-3" style="margin-top:10px">
       <div><label>VAT (%)</label><input id="inpVAT" type="number" value="0" min="0" step="0.1"></div>
+      <div>
+        <label>Chiết khấu / Giảm giá <span class="small" style="font-weight:400">(trước VAT)</span></label>
+        <div style="display:flex;gap:6px">
+          <input id="inpDiscount" type="text" value="0" placeholder="0" style="flex:1">
+          <select id="inpDiscountType" style="width:70px;flex:0 0 70px;padding-right:24px">
+            <option value="%">%</option>
+            <option value="VND">₫</option>
+          </select>
+        </div>
+      </div>
+      <div><label>Tên người ký</label><input id="inpSignName" type="text" value="Liluca Flowers"></div>
+
       <div><label>Ghi chú (dòng 1)</label><input id="inpNote1" type="text" value="Báo giá có hiệu lực trong vòng 7 ngày. Vui lòng liên hệ Liluca để xác nhận đặt hoa."></div>
       <div><label>Lời chúc (dòng 2)</label><input id="inpNote2" type="text" value="Giá đã bao gồm gói hoa cơ bản. Phí ship sẽ tính theo khu vực giao."></div>
-
-      <div><label>Tên người ký</label><input id="inpSignName" type="text" value="Liluca Flowers"></div>
       <div><label>Chức danh</label><input id="inpSignTitle" type="text" value="Đại diện cửa hàng"></div>
     </div>
 
@@ -163,6 +173,7 @@
 
   <section class="summary">
     <p>Tạm tính <span id="subtotal">0 ₫</span></p>
+    <p id="discountLine" style="display:none"><span id="discountLabel">Chiết khấu</span> <span id="discount">0 ₫</span></p>
     <p><span id="taxLabel">Thuế</span> <span id="tax">0 ₫</span></p>
     <p class="total">Tổng cộng <span id="grand">0 ₫</span></p>
   </section>
@@ -450,11 +461,26 @@ function recalc(){
     tbody.appendChild(tr);
   });
   const vat=parseNum(document.getElementById('inpVAT').value);
+  const discRaw=parseNum(document.getElementById('inpDiscount').value);
+  const discType=document.getElementById('inpDiscountType').value;
+
+  // Chiết khấu tính trên subtotal (TRƯỚC VAT)
+  const discountAmt = discType==='%' ? subtotal*(discRaw/100) : discRaw;
+  const afterDiscount = Math.max(0, subtotal - discountAmt);
+
+  const dLine = document.getElementById('discountLine');
+  if(discountAmt > 0){
+    dLine.style.display = '';
+    document.getElementById('discountLabel').textContent = discType==='%' ? `Chiết khấu (${discRaw}%)` : 'Chiết khấu';
+    document.getElementById('discount').textContent = '−' + formatMoney(discountAmt, cur);
+  } else {
+    dLine.style.display = 'none';
+  }
 
   const taxLabelEl = document.getElementById('taxLabel');
   if (taxLabelEl) taxLabelEl.textContent = `Thuế (${vat}%)`;
 
-  const tax=subtotal*(vat/100); const grand=subtotal+tax;
+  const tax=afterDiscount*(vat/100); const grand=afterDiscount+tax;
   document.getElementById('subtotal').textContent=formatMoney(subtotal,cur);
   document.getElementById('tax').textContent=formatMoney(tax,cur);
   document.getElementById('grand').textContent=formatMoney(grand,cur);
@@ -475,6 +501,7 @@ document.getElementById('btnExportData').addEventListener('click', ()=>{
     company:$('#inpCompany').value, tagline:$('#inpTagline').value, tax:$('#inpTaxCode').value,
     username:$('#inpUsername').value, number:$('#inpNumber').value, date:$('#inpDate').value,
     currency:$('#inpCurrency').value, vat:$('#inpVAT').value,
+    discount:$('#inpDiscount').value, discountType:$('#inpDiscountType').value,
     note1:$('#inpNote1').value, note2:$('#inpNote2').value,
     signName:$('#inpSignName').value, signTitle:$('#inpSignTitle').value,
     billName:$('#inpBillName').value, billAddr:$('#inpBillAddr').value
@@ -501,6 +528,8 @@ document.getElementById('importFile').addEventListener('change', e=>{
         if(m.date!=null) $('#inpDate').value=m.date;
         if(m.currency!=null) $('#inpCurrency').value=m.currency;
         if(m.vat!=null) $('#inpVAT').value=m.vat;
+        if(m.discount!=null) $('#inpDiscount').value=m.discount;
+        if(m.discountType!=null) $('#inpDiscountType').value=m.discountType;
         if(m.note1!=null) $('#inpNote1').value=m.note1;
         if(m.note2!=null) $('#inpNote2').value=m.note2;
         if(m.signName!=null) $('#inpSignName').value=m.signName;
@@ -573,6 +602,8 @@ document.getElementById('btnPNG').addEventListener('click', async () => {
 function initApp(){
   document.getElementById('inpDate').value = new Date().toISOString().slice(0, 10);
   document.getElementById('inpVAT').addEventListener('input', recalc);
+  document.getElementById('inpDiscount').addEventListener('input', recalc);
+  document.getElementById('inpDiscountType').addEventListener('change', recalc);
   document.getElementById('inpCurrency').addEventListener('change', recalc);
 
   renderCustomerCards();
