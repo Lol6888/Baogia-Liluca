@@ -205,10 +205,10 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
 .signature-name{ font-weight: 800; margin: 0; font-size: 15px; }
 .signature-title{ font-size: 13px; margin: 4px 0 0; opacity: .8; }
 
-/* Print — A4 (multi-page safe) */
+/* Print — A4 full bleed (không padding trắng) */
 @page{
   size: A4;
-  margin: 14mm 14mm 16mm 14mm;
+  margin: 0;
 }
 @media print{
   html, body{
@@ -218,7 +218,7 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
   }
   .builder{ display:none !important; }
 
-  /* Giữ decor brand graphic khi in (chỉ xuất hiện trang 1 do position absolute) */
+  /* Giữ decor brand graphic khi in */
   .decor{
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
@@ -234,17 +234,17 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
     opacity: .85;
   }
 
-  /* Wrapper: căng full chiều cao A4 (297mm) trừ @page margin (14+16=30mm) */
+  /* Wrapper = full A4 (210x297mm). Padding nội tại thay cho @page margin */
   .invoice-wrapper{
-    width: 100%;
+    width: 210mm;
     max-width: none;
-    min-height: 267mm;
+    min-height: 297mm;
     margin: 0;
-    padding: 0;
+    padding: 16mm 16mm 18mm;
     border-radius: 0;
     box-shadow: none;
     background: transparent;
-    overflow: visible;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }

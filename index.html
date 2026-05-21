@@ -526,10 +526,47 @@ document.getElementById('btnPDF').addEventListener('click', () => {
   window.print();
   setTimeout(() => { document.title = originalTitle; }, 1000);
 });
+async function rasterizeLogoToPNG(){
+  // Convert SVG logo to high-res PNG data URL để html2canvas render đúng
+  const logoEl = document.getElementById('logo');
+  const src = logoEl.src;
+  if(!src || src.startsWith('data:image/png')) return null;
+  try{
+    const res = await fetch(src);
+    const svgText = await res.text();
+    const blob = new Blob([svgText], {type:'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise((ok,err)=>{ img.onload=ok; img.onerror=err; img.src=url; });
+    const scale = 4;
+    const w = img.naturalWidth || 401;
+    const h = img.naturalHeight || 64;
+    const c = document.createElement('canvas');
+    c.width = w*scale; c.height = h*scale;
+    const ctx = c.getContext('2d');
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    const png = c.toDataURL('image/png');
+    const original = logoEl.src;
+    logoEl.src = png;
+    await new Promise(r => { if(logoEl.complete) r(); else logoEl.onload = r; });
+    return original;
+  }catch(e){
+    console.warn('Logo rasterize failed:', e);
+    return null;
+  }
+}
+
 document.getElementById('btnPNG').addEventListener('click', async () => {
   const invoice = document.getElementById('invoice'); invoice.scrollIntoView();
-  const canvas = await html2canvas(invoice, { scale: 2, useCORS: true, backgroundColor: '#fff' });
-  const link = document.createElement('a'); link.download = 'liluca-baogia.png'; link.href = canvas.toDataURL('image/png'); link.click();
+  const originalLogoSrc = await rasterizeLogoToPNG();
+  try{
+    const canvas = await html2canvas(invoice, { scale: 2, useCORS: true, backgroundColor: '#fff' });
+    const link = document.createElement('a'); link.download = 'liluca-baogia.png'; link.href = canvas.toDataURL('image/png'); link.click();
+  } finally {
+    if(originalLogoSrc) document.getElementById('logo').src = originalLogoSrc;
+  }
 });
 
 /* init */
