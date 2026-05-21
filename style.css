@@ -207,21 +207,122 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
 .signature-name{ font-weight: 800; margin: 0; font-size: 15px; }
 .signature-title{ font-size: 13px; margin: 4px 0 0; opacity: .8; }
 
-/* Print — A4 */
-@page{ size: A4; margin: 0; }
+/* Print — A4 (multi-page safe) */
+@page{
+  size: A4;
+  margin: 14mm 14mm 16mm 14mm;
+}
 @media print{
-  :root{ --p:.94 }
-  body{ background:#fff; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .builder{ display:none !important; }
-  .invoice-wrapper{
-    width: calc(210mm / var(--p)); min-height: calc(297mm / var(--p));
-    margin: 0; border-radius: 0; box-shadow: none;
-    padding: 18mm 16mm 16mm; transform: scale(var(--p)); transform-origin: top left;
-    overflow: hidden; page-break-after: always; page-break-inside: avoid;
+  html, body{
+    background:#fff;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  .decor-circle{ top: -52mm; right: -52mm; width: 160mm; height: 160mm; }
-  .decor-blob{ top: 38mm; right: 22mm; }
-  .info, .items-wrapper, .summary, .invoice-signature, .invoice-note, .items, .items tbody, .items tr{ break-inside: avoid; page-break-inside: avoid; }
+  .builder{ display:none !important; }
+
+  /* Bỏ decor khi in cho gọn gàng, B2B-friendly */
+  .decor{ display:none !important; }
+
+  /* Wrapper: full width của vùng content trong @page, cho phép flow nhiều trang */
+  .invoice-wrapper{
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    overflow: visible;
+  }
+
+  /* Header (logo + tagline + social): không tách */
+  .invoice-header{
+    break-inside: avoid; page-break-inside: avoid;
+    margin-bottom: 6mm;
+  }
+  .logo{ height: 14mm; max-width: 70mm; }
+  .company-info{ min-height: 0; }
+  .company-name{ font-size: 14pt; }
+  .tagline{ font-size: 10pt; }
+  .social p{ font-size: 10pt; }
+  .ico{ width: 7mm; height: 7mm; }
+
+  /* Title + thông tin bill: dính nhau */
+  .title{
+    font-size: 18pt;
+    margin: 0 0 4mm;
+    break-after: avoid; page-break-after: avoid;
+  }
+  .title::after{ width: 14mm; height: 2pt; margin-top: 3pt; }
+  .info{
+    grid-template-columns: 1.4fr .8fr .8fr;
+    gap: 8mm;
+    font-size: 10.5pt;
+    margin-bottom: 5mm;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+
+  /* Bảng items: header lặp lại mỗi trang, mỗi row không tách */
+  .items-wrapper{
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-top: 2mm;
+  }
+  .items{ width: 100%; border-collapse: collapse; }
+  .items thead{ display: table-header-group; }
+  .items thead th{
+    background: #faf5ee;
+    border-bottom: 1pt solid #d9cfbe;
+    padding: 6pt 8pt;
+    font-size: 10pt;
+  }
+  .items tbody tr{
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .items td{
+    padding: 5pt 8pt;
+    font-size: 10.5pt;
+    vertical-align: middle;
+    border-bottom: .5pt solid #eadfce;
+  }
+
+  /* Thumbnail nhỏ hơn cho in giấy */
+  .product-cell{ gap: 6pt; }
+  .product-thumb{
+    width: 28pt; height: 28pt; flex: 0 0 28pt;
+    border: .5pt solid #ddd;
+    border-radius: 4pt;
+  }
+  /* Placeholder ẩn nhưng vẫn giữ chỗ để alignment đồng nhất */
+  .product-thumb.placeholder{ visibility: hidden; border: none; }
+
+  /* Summary + chữ ký + footer: cố gắng dính nhau ở cuối */
+  .summary{
+    margin-top: 5mm;
+    font-size: 11pt;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .summary span{ min-width: 30mm; }
+  .summary .total{ font-size: 13pt; }
+  .invoice-signature{
+    margin-top: 8mm;
+    break-inside: avoid; page-break-inside: avoid;
+    break-before: avoid; page-break-before: avoid;
+  }
+  .signature-line{ width: 60mm; margin: 12mm 0 3mm; }
+  .signature-name{ font-size: 11pt; }
+  .signature-title{ font-size: 9.5pt; }
+  .invoice-note{
+    margin-top: 6mm;
+    padding-top: 4mm;
+    font-size: 9.5pt;
+    break-inside: avoid; page-break-inside: avoid;
+    break-before: avoid; page-break-before: avoid;
+  }
+  .invoice-note p{ margin: 2pt 0; }
 }
 
 /* Responsive */
