@@ -234,17 +234,19 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
     opacity: .85;
   }
 
-  /* Wrapper: full width của vùng content trong @page, cho phép flow nhiều trang */
+  /* Wrapper: căng full chiều cao A4 (297mm) trừ @page margin (14+16=30mm) */
   .invoice-wrapper{
     width: 100%;
     max-width: none;
-    min-height: 0;
+    min-height: 267mm;
     margin: 0;
     padding: 0;
     border-radius: 0;
     box-shadow: none;
     background: transparent;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Header (logo + tagline + social): không tách */
@@ -319,7 +321,8 @@ button.add-row{background:#fff;color:var(--brand);border:1px dashed var(--accent
   .summary span{ min-width: 30mm; }
   .summary .total{ font-size: 13pt; }
   .invoice-signature{
-    margin-top: 8mm;
+    margin-top: auto;          /* flex auto đẩy xuống cuối trang */
+    padding-top: 8mm;
     break-inside: avoid; page-break-inside: avoid;
     break-before: avoid; page-break-before: avoid;
   }
